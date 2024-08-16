@@ -3,7 +3,7 @@ from pyrogram.types import (
     InlineKeyboardMarkup,
     KeyboardButton,
     ReplyKeyboardMarkup,
-    ForceReply,
+    ForceReply
 )
 
 
@@ -88,3 +88,20 @@ def force_reply(selective=True):
 
 def array_chunk(input_array, size):
     return [input_array[i : i + size] for i in range(0, len(input_array), size)]
+
+def seperate_filter(filter):
+    from pyrogram.filters import Filter, AndFilter, OrFilter, InvertFilter
+    _list = []
+    def func(filter):
+        if isinstance(filter, (AndFilter, OrFilter, InvertFilter)):
+            func(filter.base)
+            if isinstance(filter, (AndFilter, OrFilter)):
+                func(filter.other)
+        elif isinstance(filter, Filter):
+            _list.append(filter)
+        return _list
+    return func(filter)
+    
+        
+    
+    

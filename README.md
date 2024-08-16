@@ -15,9 +15,7 @@ of advanced features, simplifies conversation handling, and offers a high degree
 
 ## Documentation
 
-You can find the full documentation at [pyromod.pauxis.dev](https://pyromod.pauxis.dev).
-
-Also feel free to ask any pyromod-related questions on our [Telegram group](https://t.me/pyromodchat).
+For now theres nı documentation but it will be soon here
 
 ## Key Features
 
@@ -44,26 +42,26 @@ Also feel free to ask any pyromod-related questions on our [Telegram group](http
 **Awaiting a single message from a specific chat:**
 
 ```python
-response = await client.listen(chat_id=chat_id)
+response = await client.listen_chat(chat_id=chat_id)
 ```
 
 **Awaiting a single message from a specific user in a specific chat:**
 
 ```python
-response = await client.listen(chat_id=chat_id, user_id=user_id)
+response = await client.listen_chat(chat_id=chat_id, user_id=user_id)
 ```
 
 **Asking the user a question then await for the response:**
 
 ```python
-response = await client.ask(chat_id=chat_id, text='What is your name?')
+response = await client.ask_to_chat(chat_id=chat_id, text='What is your name?')
 ```
 
 **Asking the user a question then await for the response, with a timeout:**
 
 ```python
 try:
-    response = await client.ask(chat_id=chat_id, text='What is your name?', timeout=10)
+    response = await client.ask_to_chat(chat_id=chat_id, text='What is your name?', timeout=10)
 except ListenerTimeout:
     await message.reply('You took too long to answer.')
 ```
@@ -71,7 +69,8 @@ except ListenerTimeout:
 **Full handler example, getting user's name and age with bound method Chat.ask:**
 
 ```python
-from pyromod import Client, Message
+from pyromod import Client
+from pyromod.types import Message
 from pyrogram import filters
 
 
@@ -101,20 +100,9 @@ keyboard = ikb([
 To get started with pyromod, you can install it using pip:
 
 ```bash
-pip install pyromod
+pip install git+https://github.com/MemoKing34/pyromod
 ```
 
-Or poetry:
-
-```bash
-poetry add pyromod
-```
-
-Or rye:
-
-```bash
-rye add pyromod
-```
 
 ## Initialization
 
@@ -149,6 +137,7 @@ This project may include snippets of Pyrogram code
 
 - Pyrogram - Telegram MTProto API Client Library for Python. Copyright (C) 2017-2023
   Dan <<https://github.com/delivrance>>
+  Usernein <<https://github.com/usernein>>
 
 Licensed under the terms of the [GNU Lesser General Public License v3 or later (LGPLv3+)](COPYING.lesser)
 

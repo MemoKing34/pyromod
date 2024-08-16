@@ -17,8 +17,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with pyromod.  If not, see <https://www.gnu.org/licenses/>.
 """
+import inspect
 from contextlib import contextmanager, asynccontextmanager
-from inspect import iscoroutinefunction
 from typing import Callable, T, Type
 
 from pyrogram.sync import async_to_sync
@@ -41,9 +41,11 @@ def patch_into(target_class):
                 for i in ["is_property", "is_static", "is_context"]
             }
 
-            async_to_sync(container, name)
+            method = getattr(container, name)
+            if inspect.iscoroutinefunction(method) or inspect.isasyncgenfunction(method):
+                async_to_sync(container, name)
             func = getattr(container, name)
-
+            
             for tKey, tValue in tempConf.items():
                 setattr(func, tKey, tValue)
 

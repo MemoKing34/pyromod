@@ -53,6 +53,8 @@ docs/_build/
 test.py
 .vscode
 Session.vim
+*.session
+*.session-journal
 
 .python-version
 .venv
