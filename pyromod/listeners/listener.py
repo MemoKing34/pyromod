@@ -30,7 +30,7 @@ class Listener(pyrogram.handlers.handler.Handler):
         
     async def _execute_callback(self, callback, *args):
         if inspect.iscoroutinefunction(callback):
-            await listener.callback(self._client, *args)
+            await self.callback(self._client, *args)
         else:
             await self._client.loop.run_in_executor(
                 self._client.executor, callback,

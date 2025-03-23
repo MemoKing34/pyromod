@@ -54,7 +54,7 @@ def patch_into(target_class):
             elif func.is_static:
                 func = staticmethod(func)
             elif func.is_context:
-                if iscoroutinefunction(func.__call__):
+                if inspect.iscoroutinefunction(func.__call__):
                     func = asynccontextmanager(func)
                 else:
                     func = contextmanager(func)
