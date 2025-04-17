@@ -25,7 +25,7 @@ class Dispatcher(pyrogram.dispatcher.Dispatcher):
     @should_patch()
     def __init__(self, client: "pyrogram.Client"):
         self.old__init__(client)
-        self.listeners = {listener_type: set() for listener_type in ListenerType}
+        self.listeners: dict[ListenerType, set[Listener]] = {listener_type: set() for listener_type in ListenerType}
     
     @should_patch()
     def add_listener(self, listener: Listener, listener_type: ListenerType):
@@ -63,7 +63,7 @@ class Dispatcher(pyrogram.dispatcher.Dispatcher):
                     if handler_type in self.LISTENER_HANDLER:
                         for listener in self.listeners[self.LISTENER_HANDLER[handler_type]]:
                             try:
-                                if await listener.check(self.client, parsed_update):
+                                if await listener.filters(self.client, parsed_update):
                                     await listener.callback(self.client, parsed_update)
                                     raise pyrogram.StopPropagation
                             except pyrogram.StopPropagation:
