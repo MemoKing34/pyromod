@@ -3,6 +3,7 @@ import logging
 import asyncio
 
 import pyrogram
+import pyrogram.dispatcher
 from pyrogram import handlers
 
 log = logging.getLogger(__name__)
@@ -96,7 +97,7 @@ class Dispatcher(pyrogram.dispatcher.Dispatcher):
                                 if inspect.iscoroutinefunction(handler.callback):
                                     await handler.callback(self.client, *args)
                                 else:
-                                    await self.loop.run_in_executor(
+                                    await self.client.loop.run_in_executor(
                                         self.client.executor,
                                         handler.callback,
                                         self.client, *args
