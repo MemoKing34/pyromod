@@ -38,8 +38,8 @@ class Dispatcher(pyrogram.dispatcher.Dispatcher):
 
     
     @should_patch()
-    async def stop(self):
-        await self.oldstop()
+    async def stop(self, *args, **kwargs): # Doing like this much safer
+        await self.oldstop(*args, **kwargs)
         await self.client.stop_listening()
         
     @should_patch()
@@ -74,9 +74,11 @@ class Dispatcher(pyrogram.dispatcher.Dispatcher):
                                 raise pyrogram.StopPropagation
                             except Exception as e:
                                 log.exception(e)
-                    
                     for group in self.groups.values():
                         for handler in group:
+                            if isinstance(handler, handlers.ErrorHandler):
+                                continue
+
                             args = None
 
                             if isinstance(handler, handler_type):
@@ -88,7 +90,12 @@ class Dispatcher(pyrogram.dispatcher.Dispatcher):
                                     continue
 
                             elif isinstance(handler, handlers.RawUpdateHandler):
-                                args = (update, users, chats)
+                                try:
+                                    if await handler.check(self.client, update):
+                                        args = (update, users, chats)
+                                except Exception as e:
+                                    log.exception(e)
+                                    continue
 
                             if args is None:
                                 continue
@@ -100,14 +107,18 @@ class Dispatcher(pyrogram.dispatcher.Dispatcher):
                                     await self.client.loop.run_in_executor(
                                         self.client.executor,
                                         handler.callback,
-                                        self.client, *args
+                                        self.client,
+                                        *args
                                     )
                             except pyrogram.StopPropagation:
                                 raise
                             except pyrogram.ContinuePropagation:
                                 continue
-                            except Exception as e:
-                                log.exception(e)
+                            except Exception as exc:
+                                await self.handle_update_handler_exception(
+                                    exc, handler, update, users, chats
+                                )
+
                             break
             except pyrogram.StopPropagation:
                 pass

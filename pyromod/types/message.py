@@ -9,7 +9,7 @@ from ..utils import patch_into, should_patch
 
 @patch_into(pyrogram.types.messages_and_media.message.Message)
 class Message(pyrogram.types.messages_and_media.message.Message):
-    _client = Client
+    _client: Client
     question_message: "Message"
 
     @should_patch()
