@@ -10,9 +10,13 @@ requires-python = ">= 3.8"
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.rye]
+[tool.uv]
 managed = true
-dev-dependencies = []
+
+[dependency-groups]
+dev = [
+    "kurigram>=2.2.22",
+]
 
 [tool.hatch.metadata]
 allow-direct-references = true

@@ -1,0 +1,60 @@
+version = 1
+revision = 3
+requires-python = ">=3.8"
+
+[[package]]
+name = "async-timeout"
+version = "5.0.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/a5/ae/136395dfbfe00dfc94da3f3e136d0b13f394cba8f4841120e34226265780/async_timeout-5.0.1.tar.gz", hash = "sha256:d9321a7a3d5a6a5e187e824d2fa0793ce379a202935782d555d6e9d2735677d3", size = 9274, upload-time = "2024-11-06T16:41:39.6Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/fe/ba/e2081de779ca30d473f21f5b30e0e737c438205440784c7dfc81efc2b029/async_timeout-5.0.1-py3-none-any.whl", hash = "sha256:39e3809566ff85354557ec2398b55e096c8364bacac9405a7a1fa429e77fe76c", size = 6233, upload-time = "2024-11-06T16:41:37.9Z" },
+]
+
+[[package]]
+name = "kurigram"
+version = "2.2.22"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pyaes" },
+    { name = "python-socks", extra = ["asyncio"] },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/49/72/6e7098040fc2fa876c06b314bb6af9290d521276d93ce0e00833985ccb89/kurigram-2.2.22.tar.gz", hash = "sha256:b19a462b0c91b1f594f84e1b65e1c1c8010748f86d5b9a4279d7b6e4dfb021ef", size = 575603, upload-time = "2026-04-17T21:33:47.428Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1d/44/3d6a84df70aa1fa3ab9940b32f0ea309c6c818062ad39709c39dc830e08f/kurigram-2.2.22-py3-none-any.whl", hash = "sha256:de1a7d787bd3727d930e600e6b4aae3189f85ddc47dd8ecacd5415a5157d812c", size = 5598390, upload-time = "2026-04-17T21:33:45.091Z" },
+]
+
+[[package]]
+name = "pyaes"
+version = "1.6.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/44/66/2c17bae31c906613795711fc78045c285048168919ace2220daa372c7d72/pyaes-1.6.1.tar.gz", hash = "sha256:02c1b1405c38d3c370b085fb952dd8bea3fadcee6411ad99f312cc129c536d8f", size = 28536, upload-time = "2017-09-20T21:17:54.23Z" }
+
+[[package]]
+name = "pyromod"
+version = "3.2.0"
+source = { editable = "." }
+
+[package.dev-dependencies]
+dev = [
+    { name = "kurigram" },
+]
+
+[package.metadata]
+
+[package.metadata.requires-dev]
+dev = [{ name = "kurigram", specifier = ">=2.2.22" }]
+
+[[package]]
+name = "python-socks"
+version = "2.8.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/36/0b/cd77011c1bc01b76404f7aba07fca18aca02a19c7626e329b40201217624/python_socks-2.8.1.tar.gz", hash = "sha256:698daa9616d46dddaffe65b87db222f2902177a2d2b2c0b9a9361df607ab3687", size = 38909, upload-time = "2026-02-16T05:24:00.745Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/15/fe/9a58cb6eec633ff6afae150ca53c16f8cc8b65862ccb3d088051efdfceb7/python_socks-2.8.1-py3-none-any.whl", hash = "sha256:28232739c4988064e725cdbcd15be194743dd23f1c910f784163365b9d7be035", size = 55087, upload-time = "2026-02-16T05:23:59.147Z" },
+]
+
+[package.optional-dependencies]
+asyncio = [
+    { name = "async-timeout", marker = "python_full_version < '3.11'" },
+]
