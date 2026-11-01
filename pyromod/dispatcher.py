@@ -1,3 +1,4 @@
+import contextlib
 import inspect
 import logging
 import asyncio
@@ -43,7 +44,7 @@ class Dispatcher(pyrogram.dispatcher.Dispatcher):
         await self.client.stop_listening()
         
     @should_patch()
-    async def handler_worker(self, lock):
+    async def handler_worker(self, lock = None):
         while True:
             packet = await self.updates_queue.get()
 
@@ -60,7 +61,7 @@ class Dispatcher(pyrogram.dispatcher.Dispatcher):
                     else (None, type(None))
                 )
 
-                async with lock:
+                async with (lock or contextlib.nullcontext()):
                     if handler_type in self.LISTENER_HANDLER:
                         for listener in self.listeners[self.LISTENER_HANDLER[handler_type]]:
                             try:
