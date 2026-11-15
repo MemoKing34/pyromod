@@ -1,20 +1,19 @@
-import contextlib
 import inspect
 import logging
 import asyncio
+from typing import Any
 
 import pyrogram
 import pyrogram.dispatcher
 from pyrogram import handlers
-
-log = logging.getLogger(__name__)
-
 
 from .listeners.listener import Listener
 from .enums import ListenerType
 from .utils import patch_into, should_patch
 from .exceptions import ListenerStopped
 
+
+log = logging.getLogger(__name__)
 
 @patch_into(pyrogram.dispatcher.Dispatcher)
 class Dispatcher(pyrogram.dispatcher.Dispatcher):
@@ -56,71 +55,72 @@ class Dispatcher(pyrogram.dispatcher.Dispatcher):
                 parser = self.update_parsers.get(type(update), None)
 
                 parsed_update, handler_type = (
-                    await parser(update, users, chats)
-                    if parser is not None
-                    else (None, type(None))
+                    await parser(update, users, chats) if parser is not None else (None, type(None))
                 )
 
-                async with (lock or contextlib.nullcontext()):
-                    if handler_type in self.LISTENER_HANDLER:
-                        for listener in self.listeners[self.LISTENER_HANDLER[handler_type]]:
-                            try:
-                                if await listener.filters(self.client, parsed_update):
-                                    await listener.callback(self.client, parsed_update)
-                                    raise pyrogram.StopPropagation
-                            except pyrogram.StopPropagation:
-                                self.remove_listener(listener, self.LISTENER_HANDLER[handler_type])
-                                raise
-                            except pyrogram.ContinuePropagation:
+                if handler_type in self.LISTENER_HANDLER:
+                    for listener in self.listeners[self.LISTENER_HANDLER[handler_type]]:
+                        try:
+                            if await listener.filters(self.client, parsed_update):
+                                await listener.callback(self.client, parsed_update)
                                 raise pyrogram.StopPropagation
+                        except pyrogram.StopPropagation:
+                            self.remove_listener(listener, self.LISTENER_HANDLER[handler_type])
+                            raise
+                        except pyrogram.ContinuePropagation:
+                            raise pyrogram.StopPropagation
+                        except Exception as e:
+                            log.exception(e)
+                for group in self.groups.values():
+                    for handler in group:
+                        if isinstance(handler, handlers.ErrorHandler):
+                            continue
+
+                        args: tuple[Any, ...] | None = None
+
+                        if isinstance(handler, handler_type):
+                            try:
+                                if await handler.check(self.client, parsed_update):
+                                    args = (parsed_update,)
                             except Exception as e:
                                 log.exception(e)
-                    for group in self.groups.values():
-                        for handler in group:
-                            if isinstance(handler, handlers.ErrorHandler):
                                 continue
 
-                            args = None
-
-                            if isinstance(handler, handler_type):
-                                try:
-                                    if await handler.check(self.client, parsed_update):
-                                        args = (parsed_update,)
-                                except Exception as e:
-                                    log.exception(e)
-                                    continue
-
-                            elif isinstance(handler, handlers.RawUpdateHandler):
-                                try:
-                                    if await handler.check(self.client, update):
-                                        args = (update, users, chats)
-                                except Exception as e:
-                                    log.exception(e)
-                                    continue
-
-                            if args is None:
-                                continue
-
+                        elif isinstance(handler, handlers.RawUpdateHandler):
                             try:
-                                if inspect.iscoroutinefunction(handler.callback):
-                                    await handler.callback(self.client, *args)
-                                else:
-                                    await self.client.loop.run_in_executor(
-                                        self.client.executor,
-                                        handler.callback,
-                                        self.client,
-                                        *args
-                                    )
-                            except pyrogram.StopPropagation:
-                                raise
-                            except pyrogram.ContinuePropagation:
+                                if await handler.check(self.client, update):
+                                    args = (update, users, chats)
+                            except Exception as e:
+                                log.exception(e)
                                 continue
-                            except Exception as exc:
-                                await self.handle_update_handler_exception(
-                                    exc, handler, update, users, chats
-                                )
 
-                            break
+                        if args is None:
+                            continue
+
+                        try:
+                            if inspect.iscoroutinefunction(handler.callback):
+                                await handler.callback(self.client, *args)
+                            else:
+                                await asyncio.get_running_loop().run_in_executor(
+                                    self.client.executor,
+                                    handler.callback,
+                                    self.client,
+                                    *args,
+                                )
+                        except pyrogram.StopPropagation:
+                            raise
+                        except pyrogram.ContinuePropagation:
+                            continue
+                        except Exception as exc:
+                            await self.handle_update_handler_exception(
+                                exc,
+                                handler,
+                                update,
+                                users,
+                                chats,
+                            )
+
+                        break
             except pyrogram.StopPropagation:
                 pass
             except Exception as e:

@@ -16,6 +16,7 @@ from .dispatcher import Dispatcher
 @patch_into(pyrogram.client.Client)
 class Client(pyrogram.client.Client):
     old__init__: Callable
+    dispatcher: Dispatcher
     
     @should_patch()
     def __init__(self, *args, **kwargs):
@@ -47,7 +48,7 @@ class Client(pyrogram.client.Client):
         alert_it: bool = True,
         timeout: Optional[int] = None
     ):
-        future = self.loop.create_future()
+        future = asyncio.get_running_loop().create_future()
         
         if listener_type == ListenerType.MESSAGE:
             listener = MessageListener(
@@ -120,7 +121,7 @@ class Client(pyrogram.client.Client):
     @should_patch()
     async def stop_listening(self, throw_exceptions: bool = False):
         for listener_type, listeners in self.dispatcher.listeners.items():
-            for listener in listeners:
+            for listener in listeners.copy():
                 self.stop_listener(listener, listener_type, throw_exceptions)
 
     @should_patch()
@@ -167,3 +168,4 @@ class Client(pyrogram.client.Client):
                 unallowed_click_text=unallowed_click_text,
                 alert_it=alert_it
             )
+        self._add_listener(listener, listener_type)

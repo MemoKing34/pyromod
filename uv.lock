@@ -1,6 +1,6 @@
 version = 1
-revision = 3
-requires-python = ">=3.8"
+revision = 5
+requires-python = ">=3.10"
 
 [[package]]
 name = "async-timeout"
@@ -13,15 +13,15 @@ wheels = [
 
 [[package]]
 name = "kurigram"
-version = "2.2.22"
+version = "2.2.27"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pyaes" },
     { name = "python-socks", extra = ["asyncio"] },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/49/72/6e7098040fc2fa876c06b314bb6af9290d521276d93ce0e00833985ccb89/kurigram-2.2.22.tar.gz", hash = "sha256:b19a462b0c91b1f594f84e1b65e1c1c8010748f86d5b9a4279d7b6e4dfb021ef", size = 575603, upload-time = "2026-04-17T21:33:47.428Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/7d/b9/59d958f6383fc7bf79e9af051a861446bfcc887bcee62722fd059028cd32/kurigram-2.2.27.tar.gz", hash = "sha256:f7338a8cce4885b2108a9b20daaf7bf75bea17d6da2fd13f1018fd4adb85b19c", size = 851387, upload-time = "2026-11-09T12:22:50.484Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/1d/44/3d6a84df70aa1fa3ab9940b32f0ea309c6c818062ad39709c39dc830e08f/kurigram-2.2.22-py3-none-any.whl", hash = "sha256:de1a7d787bd3727d930e600e6b4aae3189f85ddc47dd8ecacd5415a5157d812c", size = 5598390, upload-time = "2026-04-17T21:33:45.091Z" },
+    { url = "https://files.pythonhosted.org/packages/5c/2e/02e8196b334c61fb7098240a6ca0a8451eebdecf4337de582a77a0bd9045/kurigram-2.2.27-py3-none-any.whl", hash = "sha256:75aee16496f104c553e3d742c825ea860943ddad180343da95b0273a60a0a90c", size = 6501151, upload-time = "2026-11-09T12:22:48.74Z" },
 ]
 
 [[package]]
@@ -32,7 +32,7 @@ sdist = { url = "https://files.pythonhosted.org/packages/44/66/2c17bae31c9066137
 
 [[package]]
 name = "pyromod"
-version = "3.2.0"
+version = "3.2.1"
 source = { editable = "." }
 
 [package.dev-dependencies]
@@ -47,11 +47,11 @@ dev = [{ name = "kurigram", specifier = ">=2.2.22" }]
 
 [[package]]
 name = "python-socks"
-version = "2.8.1"
+version = "3.2.1"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/36/0b/cd77011c1bc01b76404f7aba07fca18aca02a19c7626e329b40201217624/python_socks-2.8.1.tar.gz", hash = "sha256:698daa9616d46dddaffe65b87db222f2902177a2d2b2c0b9a9361df607ab3687", size = 38909, upload-time = "2026-02-16T05:24:00.745Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/bb/5d/57f4f34cba6cd33dabc557096225487bfd977f8831d789b2b81a885f9ed3/python_socks-3.2.1.tar.gz", hash = "sha256:d21618ae6c6734d357be83263b3791666d12af59480ace8f48f2b5fcc8edc987", size = 39934, upload-time = "2026-10-31T11:56:08.117Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/15/fe/9a58cb6eec633ff6afae150ca53c16f8cc8b65862ccb3d088051efdfceb7/python_socks-2.8.1-py3-none-any.whl", hash = "sha256:28232739c4988064e725cdbcd15be194743dd23f1c910f784163365b9d7be035", size = 55087, upload-time = "2026-02-16T05:23:59.147Z" },
+    { url = "https://files.pythonhosted.org/packages/18/a6/175dbba852d77cf184dd6095a23dd0fe654898be74fb9dc6bfa16e89088f/python_socks-3.2.1-py3-none-any.whl", hash = "sha256:db2c37d4f7aeebfbba91d2d7670718b2d516061b34296fa8498c6f671e87c504", size = 49553, upload-time = "2026-10-31T11:56:06.54Z" },
 ]
 
 [package.optional-dependencies]
