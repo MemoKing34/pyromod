@@ -34,7 +34,7 @@ class inline_message_id(pyrogram.filters.Filter, set):
         )
         
     async def __call__(self, _, query: CallbackQuery):
-        return self.inline_message_id and self.inline_message_id in self
+        return query.inline_message_id and query.inline_message_id in self
 pyrogram.filters.inline_message_id = inline_message_id
 
 class chat(pyrogram.filters.chat):

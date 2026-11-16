@@ -15,7 +15,7 @@ managed = true
 
 [dependency-groups]
 dev = [
-    "kurigram>=2.2.22",
+    "kurigram>=2.2.27",
 ]
 
 [tool.hatch.metadata]

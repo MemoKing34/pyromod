@@ -20,7 +20,8 @@ class CallbackQueryListener(Listener):
         unallowed_click_text: str = None, 
         alert_it: bool = True
     ):
-        _filters = filters.chat_instance(chat_instance) if chat_instance is not None else filters.chat(chat_id)
+        self.chat_filter = filters.chat(chat_id) if chat_id is not None else filters.all
+        _filters = filters.chat_instance(chat_instance) if chat_instance is not None else self.chat_filter
         if message_id:
             _filters = _filters & filters.message(message_id)
         if inline_message_id:
@@ -29,6 +30,8 @@ class CallbackQueryListener(Listener):
         self.unallowed_click_text = unallowed_click_text
         if (not self.unallowed_click_text) and (self.user_filter is not filters.all):
             _filters = _filters & self.user_filter
+        if custom_filters:
+            _filters = _filters & custom_filters
         self.alert_it = alert_it
         super().__init__(client, future, callback, _filters)
             

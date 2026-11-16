@@ -1,6 +1,5 @@
 import asyncio
-from inspect import iscoroutinefunction
-from typing import Optional, Callable, Dict, List, Union
+from typing import Optional, Callable, List, Union
 
 import pyrogram
 from pyrogram.filters import Filter
@@ -128,7 +127,7 @@ class Client(pyrogram.client.Client):
     def stop_listener(self, listener: Listener, listener_type: ListenerType, throw_exception: bool = True):
         self._remove_listener(listener, listener_type)
 
-        if listener.future.done():
+        if listener.future is None or listener.future.done():
             return
 
         if throw_exception:
@@ -153,6 +152,7 @@ class Client(pyrogram.client.Client):
     ):
         if listener_type == ListenerType.MESSAGE:
             listener = MessageListener(
+                client=self,
                 callback=callback,
                 chat_id=chat_id,
                 user_id=user_id,
@@ -160,6 +160,7 @@ class Client(pyrogram.client.Client):
             )
         else:
             listener = CallbackQueryListener(
+                client=self,
                 callback=callback,
                 chat_instance=chat_instance,
                 user_id=user_id,
@@ -168,4 +169,4 @@ class Client(pyrogram.client.Client):
                 unallowed_click_text=unallowed_click_text,
                 alert_it=alert_it
             )
-        self._add_listener(listener, listener_type)
+        return self._add_listener(listener, listener_type)

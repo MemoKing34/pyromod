@@ -16,7 +16,7 @@ class MessageListener(Listener):
         user_id: Union[Union[int, str], List[Union[int, str]]] = None, 
         custom_filters: Optional['filters.Filter'] = None
     ):
-        _filters = filters.chat(chat_id)
+        _filters = filters.chat(chat_id) if chat_id is not None else filters.all
         if user_id:
             _filters = _filters & filters.user(user_id)
         if custom_filters:

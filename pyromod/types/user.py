@@ -69,4 +69,4 @@ class User(pyrogram.types.user_and_chats.user.User):
 
     @should_patch()
     async def stop_listening(self, throw_exceptions: bool = False):
-        return self._client.stop_listening(throw_exceptions)
+        return await self._client.stop_listening(throw_exceptions)

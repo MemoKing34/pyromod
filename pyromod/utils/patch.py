@@ -32,7 +32,7 @@ def patch_into(target_class):
     def wrapper(container: Type[T]) -> T:
         for name, func in filter(is_patchable, container.__dict__.items()):
             old = getattr(target_class, name, None)
-            if old is not None:  # Not adding 'old' to new func
+            if old is not None and ("old" + name) not in target_class.__dict__:  # Not adding 'old' to new func
                 setattr(target_class, "old" + name, old)
 
             # Worse Code

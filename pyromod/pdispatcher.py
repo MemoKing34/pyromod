@@ -1,0 +1,90 @@
+import inspect
+import logging
+import asyncio
+from typing import Any
+
+import pyrogram
+import pypoligram
+import pypoligram.dispatcher
+from pyrogram import handlers
+
+from .utils import patch_into, should_patch
+from .dispatcher import LISTENER_HANDLER, listener_worker
+
+
+log = logging.getLogger(__name__)
+
+@patch_into(pypoligram.dispatcher.Dispatcher)
+class Dispatcher(pypoligram.dispatcher.Dispatcher):
+    @should_patch()
+    async def handler_worker(self, lock = None) -> None:
+        while True:
+            packet = await self.updates_queue.get()
+    
+            if packet is None:
+                break
+    
+            try:
+                update, users, chats = packet
+                parser = self.update_parsers.get(type(update), None)
+    
+                parsed_update, handler_type = (
+                    await parser(update, users, chats) if parser is not None else (None, type(None))
+                )
+
+                await listener_worker(self, handler_type, parsed_update)
+                for group in self.groups.values():
+                    for handler in group:
+                        if isinstance(handler, handlers.ErrorHandler):
+                            continue
+    
+                        args: tuple[Any, ...] | None = None
+    
+                        if isinstance(handler, handler_type):
+                            try:
+                                if await handler.check(self.client, parsed_update):
+                                    args = (parsed_update,)
+                            except Exception as e:
+                                log.exception(e)
+                                continue
+    
+                        elif isinstance(handler, handlers.RawUpdateHandler):
+                            try:
+                                if await handler.check(self.client, update):
+                                    args = (update, users, chats)
+                            except Exception as e:
+                                log.exception(e)
+                                continue
+    
+                        if args is None:
+                            continue
+    
+                        try:
+                            if inspect.iscoroutinefunction(handler.callback):
+                                await handler.callback(self.clients, self.client, *args)
+                            else:
+                                await asyncio.get_running_loop().run_in_executor(
+                                    self.client.executor,
+                                    handler.callback,
+                                    self.clients,
+                                    self.client,
+                                    *args,
+                                )
+                        except pyrogram.StopPropagation:
+                            raise
+                        except pyrogram.ContinuePropagation:
+                            continue
+                        except Exception as exc:
+                            await self.handle_update_handler_exception(
+                                exc,
+                                handler,
+                                update,
+                                users,
+                                chats,
+                            )
+    
+                        break
+            except pyrogram.StopPropagation:
+                pass
+            except Exception as e:
+                log.exception(e)

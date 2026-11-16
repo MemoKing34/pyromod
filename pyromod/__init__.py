@@ -9,6 +9,15 @@ from . import types
 from . import utils
 from .client import Client
 
+try:
+    import pypoligram  # noqa: F401
+except ModuleNotFoundError as e:
+    if e.name != "pypoligram":
+        raise
+else:
+    from . import pdispatcher as _pdispatcher  # noqa: F401
+    del _pdispatcher
+
 __all__ = [
     "enums",
     "exceptions",

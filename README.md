@@ -13,9 +13,15 @@ Whether you're building a simple chatbot or a complex form to get multiple respo
 covered. It enhances Pyrogram with a range
 of advanced features, simplifies conversation handling, and offers a high degree of customizability.
 
+> [!WARNING]
+> This fork of pyromod is right now only developed for [kurigram](https://github.com/kurigram-org/kurigram) it may work for other pyrograms but its not supported.
+
+> [!INFO]
+> This fork of pyromod is compatible with [pypoligram](https://github.com/MemoKing34/pypoligram)
+
 ## Documentation
 
-For now theres nı documentation but it will be soon here
+For now theres no documentation but it will be soon here
 
 ## Key Features
 

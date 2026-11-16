@@ -10,19 +10,32 @@ from pyrogram import handlers
 from .listeners.listener import Listener
 from .enums import ListenerType
 from .utils import patch_into, should_patch
-from .exceptions import ListenerStopped
 
 
 log = logging.getLogger(__name__)
 
+LISTENER_HANDLER = {
+    handlers.MessageHandler: ListenerType.MESSAGE,
+    handlers.CallbackQueryHandler: ListenerType.CALLBACK_QUERY
+}
+
+async def listener_worker(self, handler_type, parsed_update):
+    if handler_type in LISTENER_HANDLER:
+        for listener in self.listeners[LISTENER_HANDLER[handler_type]].copy():
+            try:
+                if await listener.filters(self.client, parsed_update):
+                    await listener.callback(self.client, parsed_update)
+                    raise pyrogram.StopPropagation
+            except pyrogram.StopPropagation:
+                self.remove_listener(listener, LISTENER_HANDLER[handler_type])
+                raise
+            except pyrogram.ContinuePropagation:
+                continue
+            except Exception as e:
+                log.exception(e)
+
 @patch_into(pyrogram.dispatcher.Dispatcher)
-class Dispatcher(pyrogram.dispatcher.Dispatcher):
-    LISTENER_HANDLER = {
-        handlers.MessageHandler: ListenerType.MESSAGE,
-        handlers.CallbackQueryHandler: ListenerType.CALLBACK_QUERY
-    }
-    should_patch(LISTENER_HANDLER)
-    
+class Dispatcher(pyrogram.dispatcher.Dispatcher):    
     @should_patch()
     def __init__(self, client: "pyrogram.Client"):
         self.old__init__(client)
@@ -58,19 +71,7 @@ class Dispatcher(pyrogram.dispatcher.Dispatcher):
                     await parser(update, users, chats) if parser is not None else (None, type(None))
                 )
 
-                if handler_type in self.LISTENER_HANDLER:
-                    for listener in self.listeners[self.LISTENER_HANDLER[handler_type]]:
-                        try:
-                            if await listener.filters(self.client, parsed_update):
-                                await listener.callback(self.client, parsed_update)
-                                raise pyrogram.StopPropagation
-                        except pyrogram.StopPropagation:
-                            self.remove_listener(listener, self.LISTENER_HANDLER[handler_type])
-                            raise
-                        except pyrogram.ContinuePropagation:
-                            raise pyrogram.StopPropagation
-                        except Exception as e:
-                            log.exception(e)
+                await listener_worker(self, handler_type, parsed_update)
                 for group in self.groups.values():
                     for handler in group:
                         if isinstance(handler, handlers.ErrorHandler):
